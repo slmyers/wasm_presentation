@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				
+				<!-- title slide -->
+				<section>
+					
+					<h2>What is WebAssembly?</h2>
+					<p>by Steven Myers</p>
+
+				
+				</section>
+
+
+				<!-- explain asm.js -->
+				<section>
+
+					<section>
+						<h2>What came before WebAssembly</h2>
+					</section>
+
+					<section>
+
+						<h2>asm.js</h2>
+						<ul>
+							<li> still very intertwined with wasm (not obsolete)</li>
+							<li> low level optimized subset of js </li>
+							<li> use type annotations, linear memory, etc...</li>
+							<li> compile from C/C++ using <a href="https://github.com/kripken/emscripten">emscripten</a></li>
+						</ul>
+					
+					</section>
+						
+					<section data-markdown>
+						### cursory overview
+
+						```js
+						function DiagModule(stdlib, foreign, heap) {
+							"use asm";
+
+							// Variable Declarations
+							var sqrt = stdlib.Math.sqrt;
+
+							// Function Declarations
+							function square(x) {
+								x = +x;
+								return +(x*x);
+							}
+
+							function diag(x, y) {
+								x = +x;
+								y = +y;
+								return +sqrt(square(x) + square(y));
+							}
+
+							return { diag: diag };
+						}
+						```
+
+						
+					</section>
+
+					<section>
+						<h2> drawbacks </h2>
+						<ul>
+							<li>parsing can be expensive; compile large C libary => asm.js can be in order of MBs :( </li>
+							<li>hard to extend; its js afterall</li>
+							<li> no 64bit ints </li>
+						</ul>
+						<a href="https://youtu.be/vmzz17JGPHI?t=13m53s">source via Ben Smith </a>
+					</section>
+
+
+				</section>
+
+				
+				<!-- high level goals -->
+				<section>
+
+					<section>
+						<h2>High level goals</h2>
+						<br><a href="https://github.com/WebAssembly/design/blob/master/HighLevelGoals.md">taken from design docs</a>
+					</section>
+
+					<!-- point 1 -->
+					<section>
+						<p>Define a portable, size- and load-time-efficient binary format to serve as a compilation target 
+							which can be compiled to execute at native speed...
+					</section>
+
+					<!-- point 2 -->
+					<section>
+						<ul>
+							<li>
+    						a Minimum Viable Product (MVP) for the standard with roughly the same functionality as asm.js, primarily aimed at C/C++;
+							</li>
+							<li>
+								additional features 🦄, initially focused on key features like threads, zero cost exceptions, and SIMD, 
+								follow by additional features prioritized by feedback and experience, including support for languages other than C/C++.
+							</li>
+						</ul>
+					</section>
+
+
+					<!-- point 3 -->
+					<section>
+						<ul>
+
+							<li>
+								maintain the versionless, feature-tested and backwards-compatible evolution story of the Web
+							</li>
+
+							<li>
+								execute in the same semantic universe as JavaScript
+							</li>
+
+							<li>
+								allow synchronous calls to and from JavaScript
+							</li>
+
+						</ul>
+
+						<p> ... </p>
+						
+					</section>
+
+
+					<!-- point 4 -->
+					<section>
+						<ul>
+							
+							<li>
+								Design to support non-browser embeddings as well.
+							</li>
+							
+							<ul>
+								<li> node, POSIX, SDL (low-level game stuff) </li>
+							</ul>
+
+						</ul>
+					</section>
+
+
+					<!-- point 5 -->
+					<section>
+						<ul>
+							
+							<li>Make a great platform: </li>
+
+							<ul>
+								<li> LLVM backend... turn LLVM IR into binary/native code</li>
+								<li> useful tooling: profilers, debuggers, editor support...
+							</ul>
+						</ul>
+					</section>
+
+				</section>
+
+				<!-- point 1 --> 
+				<section>
+					
+					<!-- binary format -->
+					<section data-markdown>
+					binary format
+					```
+	&nbsp;	     00 61 73 6d 0b 00 00 00  04 74 79 70 65 87 80 80  |.asm.....type...|
+	00000010  80 00 01 40 02 01 01 01  01 08 66 75 6e 63 74 69  |...@......functi|
+	00000020  6f 6e 82 80 80 80 00 01  00 06 6d 65 6d 6f 72 79  |on........memory|
+	00000030  85 80 80 80 00 80 02 80  02 01 06 65 78 70 6f 72  |...........expor|
+	00000040  74 86 80 80 80 00 01 00  03 61 64 64 04 63 6f 64  |t........add.cod|
+	00000050  65 8c 80 80 80 00 01 86  80 80 80 00 00 14 00 14  |e...............|
+	00000060  01 40 04 6e 61 6d 65 86  80 80 80 00 01 03 61 64  |.@.name.......ad|
+	00000070  64 00 &nbsp;                                           |d.|
+					```
+					[source via Mikael Lundin](http://blog.mikaellundin.name/2016/06/19/creating-a-webassembly-binary-and-running-it-in-a-browser.html)
+					</section>
+				
+					<!-- text format -->
+					<section data-markdown>
+						text format
+						```
+						(module
+							(type $0 (func (param i32 i32) (result i32)))
+							(export "add" $add)
+							(func $add (type $0) (param $var$0 i32) (param $var$1 i32) (result i32)
+								(i32.add
+									(get_local $var$0)
+									(get_local $var$1)
+								)
+							)
+						)
+						```
+					</section>
+
+					<!-- compile pipeline for js -->
+					<section>
+						<!--  -->
+						<img src="assets/simple_js_compile_pipeline.png"></img>
+						<br>
+	 					<a href="http://creativejs.com/2013/06/the-race-for-speed-part-2-how-javascript-compilers-work/">
+							source via John Dalziel
+						</a> 
+
+					</section>
+
+					<section>
+						<ul>
+							<li> Parsing, compiling and evaluation is an expensive process in Client Side Rendering</li>
+							<ul>
+								<li><a href="https://aerotwist.com/blog/when-everything-is-important-nothing-is/"> reference</a></li>
+								<li>interesting Twitter discussion <a href="https://twitter.com/kangax/status/816451115503980549">here</a></li>
+							</ul>
+							
+
+							<li>
+								If one wants to implement more 'comprehensive programs', ie games, photo editors etc, in the browser this becomes prohibitive
+							</li>
+
+							<li>
+								significant downside to <code>asm.js</code>
+							</li>
+
+						</ul>
+					</section>
+
+				</section>
+
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<!-- scripts and crap -->
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
