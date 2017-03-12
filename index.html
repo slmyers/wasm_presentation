@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>what is webassembly?</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
@@ -39,10 +39,6 @@
 				<section>
 
 					<section>
-						<h2>What came before WebAssembly</h2>
-					</section>
-
-					<section>
 
 						<h2>asm.js</h2>
 						<ul>
@@ -55,28 +51,21 @@
 					</section>
 						
 					<section data-markdown>
-						### cursory overview
+						### example of C -> asm.js compilation
 
 						```js
-						function DiagModule(stdlib, foreign, heap) {
-							"use asm";
-
-							// Variable Declarations
-							var sqrt = stdlib.Math.sqrt;
-
-							// Function Declarations
-							function square(x) {
-								x = +x;
-								return +(x*x);
-							}
-
-							function diag(x, y) {
-								x = +x;
-								y = +y;
-								return +sqrt(square(x) + square(y));
-							}
-
-							return { diag: diag };
+						function _sqlite3_value_int64($0) {
+							$0 = $0|0;
+							var $1 = 0, $2 = 0, $3 = 0, $4 = 0, label = 0, sp = 0;
+							sp = STACKTOP;
+							STACKTOP = STACKTOP + 16|0;
+							$1 = sp;
+							HEAP32[$1>>2] = $0;
+							$2 = HEAP32[$1>>2]|0;
+							$3 = (_sqlite3VdbeIntValue($2)|0);
+							$4 = tempRet0;
+							tempRet0 = ($4);
+							STACKTOP = sp;return ($3|0);
 						}
 						```
 
@@ -163,23 +152,9 @@
 						</ul>
 					</section>
 
-
-					<!-- point 5 -->
-					<section>
-						<ul>
-							
-							<li>Make a great platform: </li>
-
-							<ul>
-								<li> LLVM backend... turn LLVM IR into binary/native code</li>
-								<li> useful tooling: profilers, debuggers, editor support...
-							</ul>
-						</ul>
-					</section>
-
 				</section>
 
-				<!-- point 1 --> 
+
 				<section>
 					
 					<!-- binary format -->
@@ -195,7 +170,6 @@
 	00000060  01 40 04 6e 61 6d 65 86  80 80 80 00 01 03 61 64  |.@.name.......ad|
 	00000070  64 00 &nbsp;                                           |d.|
 					```
-					[source via Mikael Lundin](http://blog.mikaellundin.name/2016/06/19/creating-a-webassembly-binary-and-running-it-in-a-browser.html)
 					</section>
 				
 					<!-- text format -->
@@ -220,7 +194,7 @@
 						<!--  -->
 						<img src="assets/simple_js_compile_pipeline.png"></img>
 						<br>
-	 					<a href="http://creativejs.com/2013/06/the-race-for-speed-part-2-how-javascript-compilers-work/">
+	 					<a style="font-size: 25%"  href="http://creativejs.com/2013/06/the-race-for-speed-part-2-how-javascript-compilers-work/">
 							source via John Dalziel
 						</a> 
 
@@ -244,6 +218,25 @@
 							</li>
 
 						</ul>
+					</section>
+
+				</section>
+
+				<section>
+					
+					<section>
+						<h2> How to try? </h2>
+						<ul>
+							<li> Use the emscripten sdk to set up and manage your enviroment. </li>
+							<ul> 
+								<li>the compiler 'emcc' feels like gcc -- produces a.out.js etc</li> 
+								<li>can be used to generate html file that will load your wasm</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						
 					</section>
 
 				</section>
