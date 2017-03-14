@@ -40,16 +40,99 @@
 
 					<section>
 
-						<h2>asm.js</h2>
+						<h2>preamble</h2>
 						<ul>
-							<li> still very intertwined with wasm (not obsolete)</li>
-							<li> low level optimized subset of js </li>
-							<li> use type annotations, linear memory, etc...</li>
-							<li> compile from C/C++ using <a href="https://github.com/kripken/emscripten">emscripten</a></li>
+							<li> Just-In-Time (JIT) Compilation</li>
+							<li> assembly </li>
 						</ul>
 					
 					</section>
+
+					<section style="font-size: 80%">
+						<ol>
+							<li> 
+								<ul>
+									<br>
+									<li>code is ran through the interpreter </li>
+									<li>more-or-less a direct line-by-line translation</li>
+								</ul>
+							</li>
+							<li>
+								<ul>
+									<br>
+									<li>execution is monitored for "warm" code segments</li>
+									<li>warm segments are "stubbed" and compiled</li>
+									<li>warm segments called with same types result in execution of compiled code</li>
+								</ul>
+							</li>
+							<li>
+								<ul>
+									<br>
+									<li>very hot code is further optimized</li>
+								</ul>
+							</li>
+						</ol>
+						<hr>
 						
+							<p>assumptions are checked before executing compiled code
+							if these checks fail go back to step 1</p>
+						
+					</section>
+
+					<section>
+						<h2> example optimization </h2>
+						<p> This is an example of a monomorhpic stub.
+						<pre><code data-trim>
+							function arraySum(arr){
+								var sum = 0;
+								for (var i = 0; i < arr.length; i++) {
+									//if arr[i] is always int then compiler 
+									//will stub and run as int addition
+									sum += arr[i]; 
+								}
+							}
+						</code></pre>
+						
+						<a style="font-size: 40%" 
+							href="https://hacks.mozilla.org/2017/02/a-crash-course-in-just-in-time-jit-compilers/">
+							example via Lin Clark
+						</a>
+					</section>
+
+					<section>
+						<h2> assembly </h2>
+						<ul>
+							<li> very terse </li>
+							<li> multiple dialects, typically 1-to-1 correspondence with machine instructions </li>
+							<li> rarely written by hand </li>
+						</ul>
+					</section>
+
+				</section>
+
+				
+				<!-- high level goals -->
+				<section>
+
+					<section>
+						<h2> asm.js </h2>
+						<ul>
+							<li> first(?) form of native code compiled to the web </li>
+							<li> similiar to assembly in form </li>
+							<li> still relevant </li>
+						</ul>
+
+					</section>
+
+					<section>
+						<h2> the gist </h2>
+						<ul>
+							<li> parameter and return type annotations </li>
+							<li> "use asm" allows for code to bypass interpreter and immediately compile to assembly </li>
+							<li> uses an ArrayBuffer to "mock" the heap </li>
+						</ul>
+					</section>
+
 					<section data-markdown>
 						### example of C -> asm.js compilation
 
@@ -68,95 +151,33 @@
 							STACKTOP = sp;return ($3|0);
 						}
 						```
-
-						
 					</section>
 
 					<section>
-						<h2> drawbacks </h2>
+						<h2> downsides </h2>
 						<ul>
-							<li>parsing can be expensive; compile large C libary => asm.js can be in order of MBs :( </li>
-							<li>hard to extend; its js afterall</li>
-							<li> no 64bit ints </li>
-						</ul>
-						<a href="https://youtu.be/vmzz17JGPHI?t=13m53s">source via Ben Smith </a>
-					</section>
-
-
-				</section>
-
-				
-				<!-- high level goals -->
-				<section>
-
-					<section>
-						<h2>High level goals</h2>
-						<br><a href="https://github.com/WebAssembly/design/blob/master/HighLevelGoals.md">taken from design docs</a>
-					</section>
-
-					<!-- point 1 -->
-					<section>
-						<p>Define a portable, size- and load-time-efficient binary format to serve as a compilation target 
-							which can be compiled to execute at native speed...
-					</section>
-
-					<!-- point 2 -->
-					<section>
-						<ul>
-							<li>
-    						a Minimum Viable Product (MVP) for the standard with roughly the same functionality as asm.js, primarily aimed at C/C++;
-							</li>
-							<li>
-								additional features 🦄, initially focused on key features like threads, zero cost exceptions, and SIMD, 
-								follow by additional features prioritized by feedback and experience, including support for languages other than C/C++.
-							</li>
+							<li> slow parse time </li>
+							<li> 
+								limited ability to extend functionality 
+								<ul> <li> it's a subset of js afterall </li> </ul>
+							</li> 
 						</ul>
 					</section>
-
-
-					<!-- point 3 -->
-					<section>
-						<ul>
-
-							<li>
-								maintain the versionless, feature-tested and backwards-compatible evolution story of the Web
-							</li>
-
-							<li>
-								execute in the same semantic universe as JavaScript
-							</li>
-
-							<li>
-								allow synchronous calls to and from JavaScript
-							</li>
-
-						</ul>
-
-						<p> ... </p>
-						
-					</section>
-
-
-					<!-- point 4 -->
-					<section>
-						<ul>
-							
-							<li>
-								Design to support non-browser embeddings as well.
-							</li>
-							
-							<ul>
-								<li> node, POSIX, SDL (low-level game stuff) </li>
-							</ul>
-
-						</ul>
-					</section>
-
 				</section>
 
 
 				<section>
-					
+					<section>
+						<h2> wasm </h2>
+						<blockquote>
+							"main problem that wasm is aiming to solve... quickly start large applications"
+						</blockquote>
+						<a href="https://youtu.be/MaJCfdmr9Wg?t=19s" style="font-size: 50%"> source </a>
+
+						<p style="font-size: 75%"> running your (second) favorite language in the browser isn't high on the list
+					</section>
+
+
 					<!-- binary format -->
 					<section data-markdown>
 					binary format
