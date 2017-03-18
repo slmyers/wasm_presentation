@@ -117,7 +117,7 @@
 					<section>
 						<h2> asm.js </h2>
 						<ul>
-							<li> first(?) form of native code compiled to the web </li>
+							<li> first widely adopted solution for compiling C/C++ to run in browser </li>
 							<li> similiar to assembly in form </li>
 							<li> still relevant </li>
 						</ul>
@@ -172,9 +172,9 @@
 						<blockquote>
 							"main problem that wasm is aiming to solve... quickly start large applications"
 						</blockquote>
-						<a href="https://youtu.be/MaJCfdmr9Wg?t=19s" style="font-size: 50%"> source </a>
+						<a href="https://youtu.be/MaJCfdmr9Wg?t=19s" style="font-size: 50%"> -- Alon Zakai </a>
 
-						<p style="font-size: 75%"> running your (second) favorite language in the browser isn't high on the list
+						<ul><li> running your (second) favorite language in the browser isn't high on the list</li></ul>
 					</section>
 
 
@@ -210,37 +210,46 @@
 						```
 					</section>
 
-					<!-- compile pipeline for js -->
-					<section>
-						<!--  -->
-						<img src="assets/simple_js_compile_pipeline.png"></img>
-						<br>
-	 					<a style="font-size: 25%"  href="http://creativejs.com/2013/06/the-race-for-speed-part-2-how-javascript-compilers-work/">
-							source via John Dalziel
-						</a> 
-
+					<section data-markdown>
+						we will load this wasm module
+						```
+						(module
+							(func $i (import "imports" "imported_func") (param i32))
+							(func (export "exported_func")
+								i32.const 42
+								call $i))
+						```
 					</section>
 
 					<section>
-						<ul>
-							<li> Parsing, compiling and evaluation is an expensive process in Client Side Rendering</li>
-							<ul>
-								<li><a href="https://aerotwist.com/blog/when-everything-is-important-nothing-is/"> reference</a></li>
-								<li>interesting Twitter discussion <a href="https://twitter.com/kangax/status/816451115503980549">here</a></li>
-							</ul>
-							
-
-							<li>
-								If one wants to implement more 'comprehensive programs', ie games, photo editors etc, in the browser this becomes prohibitive
-							</li>
-
-							<li>
-								significant downside to <code>asm.js</code>
-							</li>
-
-						</ul>
+						<pre><code data-trim>
+						const importObject = { 
+						  imports: { imported_func: arg => alert(arg) } 
+						};
+						fetch('assets/simple.wasm')
+						  .then(response => response.arrayBuffer())
+						  .then(bytes => WebAssembly.instantiate(bytes, importObject))
+						  .then(results => results.instance.exports.exported_func())
+						</code></pre>
+						<button id="do-wasm-btn" onclick="doWasm()"> execute </button>
+						
 					</section>
 
+						<script> 
+							const importObject = { 
+								imports: { imported_func: arg => alert(arg) } 
+							};
+							function doWasm(){
+								if (typeof WebAssembly !== 'object') {
+									alert(`this browser does not seem to support webassembly, can not run example`);
+									return;
+								}
+								fetch('assets/simple.wasm')
+									.then(response =>response.arrayBuffer())
+									.then(bytes =>WebAssembly.instantiate(bytes, importObject))
+									.then(results => results.instance.exports.exported_func());
+							}
+						</script>
 				</section>
 
 				<section>
@@ -257,7 +266,10 @@
 					</section>
 
 					<section>
-						
+						<h2> gotchas </h2>
+						<ul>
+
+						</ul>
 					</section>
 
 				</section>
