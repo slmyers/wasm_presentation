@@ -54,14 +54,14 @@
 								<ul>
 									<br>
 									<li>code is ran through the interpreter </li>
-									<li>more-or-less a direct line-by-line translation</li>
+									<li>more-or-less a direct line-by-line translation to lower-level code</li>
 								</ul>
 							</li>
 							<li>
 								<ul>
 									<br>
 									<li>execution is monitored for "warm" code segments</li>
-									<li>warm segments are "stubbed" and compiled</li>
+									<li>warm segments are stubbed and passed to optimizing compiler</li>
 									<li>warm segments called with same types result in execution of compiled code</li>
 								</ul>
 							</li>
@@ -69,6 +69,7 @@
 								<ul>
 									<br>
 									<li>very hot code is further optimized</li>
+									<li> </li>
 								</ul>
 							</li>
 						</ol>
@@ -84,12 +85,12 @@
 						<p> This is an example of a monomorhpic stub.
 						<pre><code data-trim>
 							function arraySum(arr){
-								var sum = 0;
-								for (var i = 0; i < arr.length; i++) {
-									//if arr[i] is always int then compiler 
-									//will stub and run as int addition
-									sum += arr[i]; 
-								}
+						   var sum = 0;
+						   for (var i = 0; i < arr.length; i++) {
+							    //if arr[i] is always int then compiler 
+							    //will stub and run as int addition
+							    sum += arr[i]; 
+					    }
 							}
 						</code></pre>
 						
@@ -106,6 +107,17 @@
 							<li> multiple dialects, typically 1-to-1 correspondence with machine instructions </li>
 							<li> rarely written by hand </li>
 						</ul>
+					</section>
+
+					<section data-markdown>
+						```assembly
+						PrintString:
+              mov bx, 1     ; write to stdout
+              mov ah, 040h  ; write to file handle
+              int 21h       ; ignore return value
+              ret           ;
+						```
+
 					</section>
 
 				</section>
@@ -193,23 +205,6 @@
 					```
 					</section>
 				
-					<!-- text format -->
-					<section data-markdown>
-						text format
-						```
-						(module
-							(type $0 (func (param i32 i32) (result i32)))
-							(export "add" $add)
-							(func $add (type $0) (param $var$0 i32) (param $var$1 i32) (result i32)
-								(i32.add
-									(get_local $var$0)
-									(get_local $var$1)
-								)
-							)
-						)
-						```
-					</section>
-
 					<section data-markdown>
 						we will load this wasm module
 						```
@@ -258,17 +253,17 @@
 						<h2> How to try? </h2>
 						<ul>
 							<li> Use the emscripten sdk to set up and manage your enviroment. </li>
-							<ul> 
-								<li>the compiler 'emcc' feels like gcc -- produces a.out.js etc</li> 
-								<li>can be used to generate html file that will load your wasm</li>
-							</ul>
+							<li>the compiler 'emcc' feels like gcc -- produces a.out.js etc </li> 
+							<li>can be used to generate html file that will load your wasm </li>							
 						</ul>
 					</section>
 
 					<section>
 						<h2> gotchas </h2>
 						<ul>
-
+							<li>wasm binary format is somewhat in flux at the time of writing</li>
+							<li>projects ported to asm.js may provide an api incompatible with wasm code </li>
+							<li>porting larger projects may require some familiarity with linux or C++ build experience</li>
 						</ul>
 					</section>
 
