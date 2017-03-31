@@ -48,40 +48,9 @@
 					
 					</section>
 
-					<section style="font-size: 80%">
-						<ol>
-							<li> 
-								<ul>
-									<br>
-									<li>code is ran through the interpreter </li>
-									<li>more-or-less a direct line-by-line translation to lower-level code</li>
-								</ul>
-							</li>
-							<li>
-								<ul>
-									<br>
-									<li>execution is monitored for "warm" code segments</li>
-									<li>warm segments are stubbed and passed to optimizing compiler</li>
-									<li>warm segments called with same types result in execution of compiled code</li>
-								</ul>
-							</li>
-							<li>
-								<ul>
-									<br>
-									<li>very hot code is further optimized</li>
-									<li> 
-										<ul>
-											<li>these optimizations are outside scope of presentation</li>
-											<li>"every dirty low-level trick in the book"</li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-						</ol>
-						<hr>
+					<section>
 						
-							<p>assumptions are checked before executing compiled code
-							if these checks fail go back to step 1</p>
+						<img src="assets/compiler-pipeline-2017.png" width="80%" height="90%" />
 						
 					</section>
 
@@ -103,6 +72,10 @@
 							href="https://hacks.mozilla.org/2017/02/a-crash-course-in-just-in-time-jit-compilers/">
 							example via Lin Clark
 						</a>
+					</section>
+
+					<section>
+						<img src="assets/code-generation-architecture.png" width="80%" height="90%" />
 					</section>
 
 					<section>
@@ -134,7 +107,7 @@
 					<section>
 						<h2> asm.js </h2>
 						<ul>
-							<li> first widely adopted solution for compiling C/C++ to run in browser </li>
+							<li> first widely adopted solution for compiling C/C++ to run in browser -- without a plugin!</li>
 							<li> similiar to assembly in form </li>
 							<li> still relevant </li>
 						</ul>
@@ -173,7 +146,7 @@
 					<section>
 						<h2> downsides </h2>
 						<ul>
-							<li> slow parse time </li>
+							<li> can generate large amounts of js --> slows down parse </li>
 							<li> 
 								limited ability to extend functionality 
 								<ul> <li> it's a subset of js afterall </li> </ul>
@@ -250,6 +223,10 @@
 									.then(results => results.instance.exports.exported_func());
 							}
 						</script>
+
+						<section>
+							<h1>check out this <a href="https://d2jta7o2zej4pf.cloudfront.net/" target="_blank">link</a>
+						</section>
 				</section>
 
 				<section>
